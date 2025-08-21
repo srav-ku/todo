@@ -29,7 +29,7 @@ export default function HomePage() {
     <div className="flex h-screen overflow-hidden bg-secondary-bg">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <Sidebar 
+        <Sidebar
           onNewTask={() => {}}
           currentView="tasks"
           onViewChange={() => {}}
@@ -37,7 +37,7 @@ export default function HomePage() {
       </div>
 
       {/* Mobile Sidebar */}
-      <MobileSidebar 
+      <MobileSidebar
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onNewTask={() => {}}
@@ -151,7 +151,7 @@ export default function HomePage() {
                       </div>
                       <Progress value={completionRate} className="h-2" />
                     </div>
-                    
+
                     <div className="grid grid-cols-3 gap-4 pt-4">
                       <div className="text-center">
                         <div className="text-lg font-semibold text-green-600">{completedTasks.length}</div>
@@ -197,14 +197,14 @@ export default function HomePage() {
                               <h4 className="font-medium text-text-primary text-sm">{task.title}</h4>
                               <p className="text-xs text-text-muted">{task.project}</p>
                             </div>
-                            <Badge 
+                            <Badge
                               variant={
                                 task.status === 'completed' ? 'default' :
                                 task.status === 'in-progress' ? 'secondary' : 'outline'
                               }
                               className={
                                 task.status === 'completed' ? 'bg-green-100 text-green-800 border-green-200' :
-                                task.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' : 
+                                task.status === 'in-progress' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
                                 'bg-red-100 text-red-800 border-red-200'
                               }
                             >

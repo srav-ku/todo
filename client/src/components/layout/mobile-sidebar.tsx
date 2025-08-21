@@ -9,8 +9,8 @@ interface MobileSidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onNewTask: () => void;
-  currentView: 'tasks' | 'upcoming';
-  onViewChange: (view: 'tasks' | 'upcoming') => void;
+  currentView?: string;
+  onViewChange?: (view: string) => void;
 }
 
 export default function MobileSidebar({ isOpen, onClose, onNewTask, currentView, onViewChange }: MobileSidebarProps) {

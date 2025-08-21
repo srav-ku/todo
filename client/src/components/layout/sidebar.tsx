@@ -6,8 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface SidebarProps {
   onNewTask: () => void;
-  currentView: 'tasks' | 'upcoming';
-  onViewChange: (view: 'tasks' | 'upcoming') => void;
+  currentView?: string;
+  onViewChange?: (view: string) => void;
   onClose?: () => void;
 }
 
@@ -29,9 +29,8 @@ export default function Sidebar({ onNewTask, currentView, onViewChange, onClose 
 
   const navigationItems = [
     { name: 'Home', icon: Home, active: false, onClick: () => navigate('/') },
-    { name: 'Tasks', icon: CheckSquare, active: currentView === 'tasks', onClick: () => { onViewChange('tasks'); navigate('/tasks'); } },
+    { name: 'Tasks', icon: CheckSquare, active: currentView === 'tasks', onClick: () => { onViewChange?.('tasks'); navigate('/tasks'); } },
     { name: 'Projects', icon: Layers, active: false, onClick: () => navigate('/projects') },
-    { name: 'Upcoming', icon: Clock, active: currentView === 'upcoming', onClick: () => onViewChange('upcoming') },
     { name: 'Calendar', icon: Calendar, active: false, onClick: () => navigate('/calendar') },
     { name: 'Profile', icon: UserIcon, active: false, onClick: () => navigate('/profile') },
     { name: 'Settings', icon: Settings, active: false, onClick: () => navigate('/settings') },

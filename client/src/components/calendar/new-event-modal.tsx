@@ -1,12 +1,14 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -14,21 +16,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { useFirestoreCollection } from '@/hooks/useFirestore';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useFirestoreAdd } from "@/hooks/useFirestore";
+import { useAuth } from "@/contexts/AuthContext";
 
-const eventSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+const newEventSchema = z.object({
+  title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  scheduledTime: z.string().min(1, 'Time is required'),
-  date: z.string().min(1, 'Date is required'),
+  scheduledTime: z.string().min(1, "Time is required"),
 });
 
-type EventForm = z.infer<typeof eventSchema>;
+type NewEventForm = z.infer<typeof newEventSchema>;
 
 interface NewEventModalProps {
   isOpen: boolean;
@@ -37,42 +39,56 @@ interface NewEventModalProps {
 }
 
 export default function NewEventModal({ isOpen, onClose, selectedDate }: NewEventModalProps) {
-  const { add } = useFirestoreCollection('events');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const addEvent = useFirestoreAdd('events');
 
-  const form = useForm<EventForm>({
-    resolver: zodResolver(eventSchema),
+  const form = useForm<NewEventForm>({
+    resolver: zodResolver(newEventSchema),
     defaultValues: {
-      title: '',
-      description: '',
-      scheduledTime: '09:00',
-      date: selectedDate.toISOString().split('T')[0],
+      title: "",
+      description: "",
+      scheduledTime: "09:00",
     },
   });
 
-  const onSubmit = async (data: EventForm) => {
+  const onSubmit = async (data: NewEventForm) => {
+    if (!user) return;
+    
+    setIsSubmitting(true);
     try {
-      await add(data);
-      toast({
-        title: 'Event created',
-        description: 'Your new event has been created successfully.',
+      await addEvent({
+        ...data,
+        date: selectedDate.toISOString().split('T')[0],
+        userId: user.uid,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
+      
+      toast({
+        title: "Event created",
+        description: "Your new event has been created successfully.",
+      });
+      
       form.reset();
       onClose();
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to create event. Please try again.',
-        variant: 'destructive',
+        title: "Error creating event",
+        description: "An error occurred while creating the event.",
+        variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg" data-testid="modal-new-event">
+      <DialogContent className="sm:max-w-lg bg-white border border-gray-200" data-testid="modal-new-event">
         <DialogHeader>
-          <DialogTitle>Add New Event</DialogTitle>
+          <DialogTitle className="text-text-primary">Add New Event</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -114,43 +130,23 @@ export default function NewEventModal({ isOpen, onClose, selectedDate }: NewEven
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        {...field}
-                        data-testid="input-event-date"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="scheduledTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="time"
-                        {...field}
-                        data-testid="input-event-time"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="scheduledTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Time</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="time"
+                      {...field}
+                      data-testid="input-event-time"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button
@@ -163,9 +159,11 @@ export default function NewEventModal({ isOpen, onClose, selectedDate }: NewEven
               </Button>
               <Button
                 type="submit"
+                disabled={isSubmitting}
+                className="bg-text-primary text-white hover:bg-gray-800"
                 data-testid="button-create-event"
               >
-                Create Event
+                {isSubmitting ? "Creating..." : "Create Event"}
               </Button>
             </div>
           </form>

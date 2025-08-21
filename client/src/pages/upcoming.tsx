@@ -22,7 +22,7 @@ export default function UpcomingPage() {
   // Combine tasks and events for upcoming view
   const upcomingItems = useMemo(() => {
     const items: any[] = [];
-    
+
     // Add tasks with due dates
     tasks.forEach(task => {
       if (task.dueDate) {
@@ -56,7 +56,7 @@ export default function UpcomingPage() {
   // Filter items
   const filteredItems = upcomingItems.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     let matchesFilter = true;
     if (filterBy === 'today') {
       matchesFilter = isToday(item.date);
@@ -83,7 +83,7 @@ export default function UpcomingPage() {
       : isTomorrow(item.date) 
         ? 'Tomorrow' 
         : format(item.date, 'EEEE, MMMM d');
-    
+
     if (!acc[dateKey]) {
       acc[dateKey] = {
         label: dateLabel,
@@ -232,7 +232,7 @@ export default function UpcomingPage() {
                         <div className="space-y-3">
                           {group.items.map((item: any) => {
                             const priority = getItemPriority(item);
-                            
+
                             return (
                               <div 
                                 key={`${item.type}-${item.id}`} 
