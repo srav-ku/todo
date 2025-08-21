@@ -1,0 +1,126 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(210, 25%, 7.8431%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(210, 25%, 7.8431%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(210, 25%, 7.8431%);
+  --primary: hsl(210, 25%, 7.8431%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 4%, 9%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(210, 25%, 7.8431%);
+  --accent: hsl(210, 40%, 96%);
+  --accent-foreground: hsl(210, 25%, 7.8431%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(214.3, 31.8%, 91.4%);
+  --input: hsl(214.3, 31.8%, 91.4%);
+  --ring: hsl(210, 25%, 7.8431%);
+  --chart-1: hsl(210, 25%, 7.8431%);
+  --chart-2: hsl(159.7826, 100%, 36.0784%);
+  --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
+  --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
+  --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
+  --sidebar: hsl(0, 0%, 100%);
+  --sidebar-foreground: hsl(210, 25%, 7.8431%);
+  --sidebar-primary: hsl(210, 25%, 7.8431%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(210, 40%, 96%);
+  --sidebar-accent-foreground: hsl(210, 25%, 7.8431%);
+  --sidebar-border: hsl(214.3, 31.8%, 91.4%);
+  --sidebar-ring: hsl(210, 25%, 7.8431%);
+  --radius: 0.5rem;
+  
+  /* Custom variables for exact design matching */
+  --main-bg: hsl(0, 0%, 100%);
+  --secondary-bg: hsl(0, 0%, 97.2549%);
+  --border-color: hsl(214.3, 31.8%, 91.4%);
+  --text-primary: hsl(210, 25%, 7.8431%);
+  --text-secondary: hsl(210, 15%, 42.7451%);
+  --text-muted: hsl(210, 10%, 60.7843%);
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+}
+
+.dark {
+  --background: hsl(210, 25%, 7.8431%);
+  --foreground: hsl(0, 0%, 95%);
+  --card: hsl(210, 25%, 7.8431%);
+  --card-foreground: hsl(0, 0%, 95%);
+  --popover: hsl(210, 25%, 7.8431%);
+  --popover-foreground: hsl(0, 0%, 95%);
+  --primary: hsl(203.8863, 88.2845%, 53.1373%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(210, 40%, 12%);
+  --secondary-foreground: hsl(0, 0%, 95%);
+  --muted: hsl(210, 40%, 12%);
+  --muted-foreground: hsl(215, 20.2%, 65.1%);
+  --accent: hsl(210, 40%, 12%);
+  --accent-foreground: hsl(0, 0%, 95%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 95%);
+  --border: hsl(217.2, 32.6%, 17.5%);
+  --input: hsl(217.2, 32.6%, 17.5%);
+  --ring: hsl(203.8863, 88.2845%, 53.1373%);
+  --sidebar: hsl(210, 25%, 7.8431%);
+  --sidebar-foreground: hsl(0, 0%, 95%);
+  --sidebar-primary: hsl(203.8863, 88.2845%, 53.1373%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(210, 40%, 12%);
+  --sidebar-accent-foreground: hsl(0, 0%, 95%);
+  --sidebar-border: hsl(217.2, 32.6%, 17.5%);
+  --sidebar-ring: hsl(203.8863, 88.2845%, 53.1373%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Custom styles for exact design matching */
+.bg-sidebar {
+  background-color: var(--sidebar);
+}
+
+.bg-main-bg {
+  background-color: var(--main-bg);
+}
+
+.bg-secondary-bg {
+  background-color: var(--secondary-bg);
+}
+
+.border-border-color {
+  border-color: var(--border-color);
+}
+
+.text-text-primary {
+  color: var(--text-primary);
+}
+
+.text-text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-text-muted {
+  color: var(--text-muted);
+}
+
+.bg-text-primary {
+  background-color: var(--text-primary);
+}
