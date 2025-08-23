@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useFirestoreCollection } from '@/hooks/useFirestore';
 import { Plus, CalendarDays, Clock, Menu } from 'lucide-react';
 import NewEventModal from '@/components/calendar/new-event-modal';
+import EditEventModal from '@/components/calendar/edit-event-modal';
 import Sidebar from '@/components/layout/sidebar';
 import MobileSidebar from '@/components/layout/mobile-sidebar';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from 'date-fns';
@@ -18,7 +19,14 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Value>(new Date());
   const [view, setView] = useState<'month' | 'week' | 'day'>('month');
   const [isNewEventModalOpen, setIsNewEventModalOpen] = useState(false);
+  const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleEditEvent = (event: any) => {
+    setSelectedEvent(event);
+    setIsEditEventModalOpen(true);
+  };
   
   const { data: events = [], loading } = useFirestoreCollection('events');
   const { data: tasks = [] } = useFirestoreCollection('tasks');
@@ -79,7 +87,12 @@ export default function CalendarPage() {
           <div className="space-y-2">
             {dayEvents.length > 0 ? (
               dayEvents.map((item) => (
-                <div key={item.id} className="p-3 border border-border-color rounded-lg bg-white">
+                <div 
+                  key={item.id} 
+                  className="p-3 border border-border-color rounded-lg bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+                  onClick={() => handleEditEvent(item)}
+                  data-testid={`day-event-${item.id}`}
+                >
                   <h4 className="font-medium">{item.title}</h4>
                   {item.scheduledTime && <p className="text-sm text-gray-600">{formatTime(item.scheduledTime)}</p>}
                   {item.description && <p className="text-sm text-gray-500 mt-1">{item.description}</p>}
@@ -262,7 +275,8 @@ export default function CalendarPage() {
                         getSelectedDateEvents().map((item) => (
                           <div
                             key={item.id}
-                            className="p-3 border border-border-color rounded-lg hover:bg-gray-50"
+                            className="p-3 border border-border-color rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                            onClick={() => handleEditEvent(item)}
                             data-testid={`event-${item.id}`}
                           >
                             <div className="flex items-start justify-between">
@@ -301,6 +315,15 @@ export default function CalendarPage() {
               isOpen={isNewEventModalOpen}
               onClose={() => setIsNewEventModalOpen(false)}
               selectedDate={selectedDate && !Array.isArray(selectedDate) ? selectedDate : new Date()}
+            />
+
+            <EditEventModal
+              isOpen={isEditEventModalOpen}
+              onClose={() => {
+                setIsEditEventModalOpen(false);
+                setSelectedEvent(null);
+              }}
+              event={selectedEvent}
             />
           </div>
         </main>

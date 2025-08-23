@@ -43,6 +43,7 @@ interface Project {
 export default function Projects() {
   const [open, setOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { toast } = useToast();
   
   const { data: projects, loading, add, update, remove } = useFirestoreCollection('projects');
@@ -134,10 +135,27 @@ export default function Projects() {
 
   return (
     <div className="flex h-screen bg-primary-bg">
-      <Sidebar />
-      <MobileSidebar />
+      <MobileSidebar 
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        onNewTask={() => {}}
+      />
       
-      <main className="flex-1 p-6 overflow-auto">
+      <div className="flex flex-col w-full">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-sidebar border-b border-border-color px-4 py-2 flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <Menu className="h-5 w-5 text-text-secondary" />
+          </Button>
+          <h1 className="text-lg font-semibold text-text-primary">Memento</h1>
+          <div className="w-6"></div>
+        </div>
+        
+        <main className="flex-1 p-6 overflow-auto">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
@@ -373,7 +391,8 @@ export default function Projects() {
             </div>
           )}
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

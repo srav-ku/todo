@@ -151,7 +151,7 @@ export default function NewTaskModal({ isOpen, onClose }: NewTaskModalProps) {
                     <SelectContent>
                       {projects.map((project) => (
                         <SelectItem key={project.id} value={project.id}>
-                          {project.name}
+                          {project.title || project.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

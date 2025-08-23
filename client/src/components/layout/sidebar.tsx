@@ -42,7 +42,7 @@ export default function Sidebar({ onNewTask, currentView, onViewChange, onClose 
         {/* Logo Section */}
         <div className="flex items-center flex-shrink-0 px-6 mb-8">
           <div className="flex items-center justify-between w-full">
-            <h1 className="text-xl font-semibold text-text-primary">Memento</h1>
+            <h1 className="text-xl font-bold text-text-primary tracking-wide">Memento</h1>
             {onClose && (
               <Button variant="ghost" size="sm" onClick={onClose} data-testid="button-close-sidebar">
                 <X className="h-4 w-4" />
@@ -72,42 +72,7 @@ export default function Sidebar({ onNewTask, currentView, onViewChange, onClose 
           </div>
         </nav>
 
-        {/* Projects Section */}
-        <div className="mt-8 px-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wide">
-              Projects
-            </h3>
-            <Button variant="ghost" size="sm" className="h-auto p-1">
-              <Plus className="h-3 w-3 text-text-muted" />
-            </Button>
-          </div>
-          <div className="space-y-2">
-            {projects.map((project) => (
-              <div
-                key={project.id}
-                className="flex items-center px-3 py-2 text-sm rounded-md hover:bg-gray-50 cursor-pointer"
-                data-testid={`project-${project.id}`}
-              >
-                <div className={`w-2 h-2 ${getProjectColor(project.color)} rounded-full mr-3`}></div>
-                <span className="text-text-primary flex-1">{project.name}</span>
-                <ChevronRight className="h-3 w-3 text-text-muted" />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Add New Task Button */}
-        <div className="mt-8 px-6">
-          <Button
-            onClick={onNewTask}
-            className="w-full bg-text-primary text-white hover:bg-gray-800"
-            data-testid="button-add-task"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add New Task
-          </Button>
-        </div>
+        
 
 
       </div>

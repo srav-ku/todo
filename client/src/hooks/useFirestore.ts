@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { subscribeToCollection, addDocument, updateDocument, deleteDocument } from '@/lib/firebase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { collection, addDoc, onSnapshot, query, where, orderBy, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export const useFirestoreCollection = (collectionName: string, userSpecific: boolean = true) => {
   const [data, setData] = useState<any[]>([]);
@@ -15,7 +18,7 @@ export const useFirestoreCollection = (collectionName: string, userSpecific: boo
     }
 
     const conditions = userSpecific ? [{ field: 'userId', operator: '==', value: user?.uid }] : undefined;
-    
+
     const unsubscribe = subscribeToCollection(
       collectionName,
       (docs) => {
@@ -50,17 +53,52 @@ export const useFirestoreCollection = (collectionName: string, userSpecific: boo
   };
 };
 
-export const useFirestoreAdd = (collectionName: string) => {
+export function useFirestoreAdd(collectionName: string) {
   const { user } = useAuth();
-  
-  return async (document: any) => {
-    const docData = user ? { ...document, userId: user.uid } : document;
-    return await addDocument(collectionName, docData);
-  };
-};
+  const queryClient = useQueryClient();
 
-export const useFirestoreUpdate = (collectionName: string) => {
-  return async (docId: string, updates: any) => {
-    return await updateDocument(collectionName, docId, updates);
+  return async (data: any) => {
+    if (!user) throw new Error('User not authenticated');
+
+    const docRef = await addDoc(collection(db, collectionName), {
+      ...data,
+      userId: user.uid,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    queryClient.invalidateQueries({ queryKey: [collectionName] });
+    return docRef.id;
   };
-};
+}
+
+export function useFirestoreUpdate(collectionName: string) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return async (id: string, data: any) => {
+    if (!user) throw new Error('User not authenticated');
+
+    const docRef = doc(db, collectionName, id);
+    await updateDoc(docRef, {
+      ...data,
+      updatedAt: new Date(),
+    });
+
+    queryClient.invalidateQueries({ queryKey: [collectionName] });
+  };
+}
+
+export function useFirestoreDelete(collectionName: string) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return async (id: string) => {
+    if (!user) throw new Error('User not authenticated');
+
+    const docRef = doc(db, collectionName, id);
+    await deleteDoc(docRef);
+
+    queryClient.invalidateQueries({ queryKey: [collectionName] });
+  };
+}

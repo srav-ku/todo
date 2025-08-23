@@ -4,7 +4,6 @@ import MobileSidebar from "@/components/layout/mobile-sidebar";
 import TaskFilters from "@/components/tasks/task-filters";
 import TaskCard from "@/components/tasks/task-card";
 import NewTaskModal from "@/components/tasks/new-task-modal";
-import UpcomingSection from "@/components/upcoming/upcoming-section";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { TaskStatus } from "@/lib/types";
@@ -21,15 +20,15 @@ export default function Dashboard() {
   const { data: tasks = [], loading: isLoadingTasks } = useFirestoreCollection('tasks');
   const { data: projects = [] } = useFirestoreCollection('projects');
 
-  const filteredTasks = activeFilter === 'all' 
-    ? tasks 
+  const filteredTasks = activeFilter === 'all'
+    ? tasks
     : tasks.filter(task => task.status === activeFilter);
 
   return (
     <div className="flex h-screen overflow-hidden bg-secondary-bg">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <Sidebar 
+        <Sidebar
           onNewTask={() => setIsNewTaskModalOpen(true)}
           currentView={currentView}
           onViewChange={setCurrentView}
@@ -37,7 +36,7 @@ export default function Dashboard() {
       </div>
 
       {/* Mobile Sidebar */}
-      <MobileSidebar 
+      <MobileSidebar
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onNewTask={() => setIsNewTaskModalOpen(true)}
@@ -74,49 +73,49 @@ export default function Dashboard() {
                 </h1>
               </div>
 
-              {currentView === 'tasks' ? (
-                <>
-                  {/* Task Filters */}
-                  <div className="mb-6">
-                    <TaskFilters 
-                      activeFilter={activeFilter}
-                      onFilterChange={setActiveFilter}
-                    />
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h1 className="text-3xl font-bold text-text-primary mb-2">Tasks</h1>
+                    <p className="text-text-muted">Manage your daily tasks efficiently</p>
                   </div>
+                </div>
 
-                  {/* Tasks Grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {isLoadingTasks ? (
-                      Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="bg-white rounded-lg border border-border-color p-6 animate-pulse">
-                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                          <div className="h-3 bg-gray-200 rounded w-1/2 mb-6"></div>
-                          <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                          <div className="h-3 bg-gray-200 rounded w-2/3 mb-6"></div>
-                          <div className="h-8 bg-gray-200 rounded"></div>
-                        </div>
-                      ))
-                    ) : filteredTasks.length > 0 ? (
-                      filteredTasks.map((task) => (
-                        <TaskCard key={task.id} task={task} />
-                      ))
-                    ) : (
-                      <div className="col-span-full text-center py-12">
-                        <p className="text-text-muted">No tasks found for the selected filter.</p>
+                <TaskFilters
+                  activeFilter={activeFilter}
+                  onFilterChange={setActiveFilter}
+                />
+
+                {/* Tasks Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {isLoadingTasks ? (
+                    Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="bg-white rounded-lg border border-border-color p-6 animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2 mb-6"></div>
+                        <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3 mb-6"></div>
+                        <div className="h-8 bg-gray-200 rounded"></div>
                       </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <UpcomingSection />
-              )}
+                    ))
+                  ) : filteredTasks.length > 0 ? (
+                    filteredTasks.map((task) => (
+                      <TaskCard key={task.id} task={task} />
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-12">
+                      <p className="text-text-muted">No tasks found for the selected filter.</p>
+                    </div>
+                  )}
+                </div>
+              </>
             </div>
           </div>
         </main>
       </div>
 
       {/* New Task Modal */}
-      <NewTaskModal 
+      <NewTaskModal
         isOpen={isNewTaskModalOpen}
         onClose={() => setIsNewTaskModalOpen(false)}
       />

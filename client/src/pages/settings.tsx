@@ -1,11 +1,8 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Settings, Moon, Globe, Trash2, Menu } from 'lucide-react';
+import { Settings, Globe, Trash2, Menu } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { deleteUser } from 'firebase/auth';
@@ -27,53 +24,12 @@ import {
 export default function SettingsPage() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('memento-dark-mode');
-    return saved ? JSON.parse(saved) : false;
-  });
-  const [language, setLanguage] = useState(() => {
-    return localStorage.getItem('memento-language') || 'en';
-  });
-  const [timezone, setTimezone] = useState(() => {
-    return localStorage.getItem('memento-timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone;
-  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  useEffect(() => {
-    // Apply dark mode
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('memento-dark-mode', JSON.stringify(darkMode));
-  }, [darkMode]);
-
-  useEffect(() => {
-    localStorage.setItem('memento-language', language);
-  }, [language]);
-
-  useEffect(() => {
-    localStorage.setItem('memento-timezone', timezone);
-  }, [timezone]);
-
-  const handleSaveSettings = () => {
-    localStorage.setItem('memento-settings', JSON.stringify({
-      darkMode,
-      language,
-      timezone,
-    }));
-    
-    toast({
-      title: 'Settings saved',
-      description: 'Your preferences have been saved successfully.',
-    });
-  };
-
   const handleDeleteAccount = async () => {
     if (!user) return;
-    
+
     setIsDeleting(true);
     try {
       await deleteUser(user);
@@ -96,7 +52,7 @@ export default function SettingsPage() {
     <div className="flex h-screen overflow-hidden bg-secondary-bg">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex lg:flex-shrink-0">
-        <Sidebar 
+        <Sidebar
           onNewTask={() => {}}
           currentView="settings"
           onViewChange={() => {}}
@@ -104,7 +60,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Mobile Sidebar */}
-      <MobileSidebar 
+      <MobileSidebar
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onNewTask={() => {}}
@@ -146,72 +102,21 @@ export default function SettingsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-0.5">
-                      <Label htmlFor="dark-mode" className="text-base">
-                        Dark Mode
-                      </Label>
-                      <p className="text-sm text-text-muted">
-                        Switch to dark theme
-                      </p>
+                  <div className="space-y-2">
+                    <Label className="text-base">Language</Label>
+                    <div className="p-3 bg-gray-50 rounded-md border">
+                      <p className="text-sm text-text-primary">English (Default)</p>
+                      <p className="text-xs text-text-muted">Application language is set to English</p>
                     </div>
-                    <Switch
-                      id="dark-mode"
-                      checked={darkMode}
-                      onCheckedChange={setDarkMode}
-                      data-testid="switch-dark-mode"
-                    />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="language" className="text-base">
-                      Language
-                    </Label>
-                    <Select value={language} onValueChange={setLanguage}>
-                      <SelectTrigger data-testid="select-language">
-                        <SelectValue placeholder="Select language" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Español</SelectItem>
-                        <SelectItem value="fr">Français</SelectItem>
-                        <SelectItem value="de">Deutsch</SelectItem>
-                        <SelectItem value="zh">中文</SelectItem>
-                        <SelectItem value="ja">日本語</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="text-base">Timezone</Label>
+                    <div className="p-3 bg-gray-50 rounded-md border">
+                      <p className="text-sm text-text-primary">UTC (Coordinated Universal Time)</p>
+                      <p className="text-xs text-text-muted">All timestamps are displayed in UTC</p>
+                    </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="timezone" className="text-base">
-                      Timezone
-                    </Label>
-                    <Select value={timezone} onValueChange={setTimezone}>
-                      <SelectTrigger data-testid="select-timezone">
-                        <SelectValue placeholder="Select timezone" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="UTC">UTC (Coordinated Universal Time)</SelectItem>
-                        <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                        <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                        <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
-                        <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
-                        <SelectItem value="Europe/London">London (GMT)</SelectItem>
-                        <SelectItem value="Europe/Paris">Paris (CET)</SelectItem>
-                        <SelectItem value="Asia/Tokyo">Tokyo (JST)</SelectItem>
-                        <SelectItem value="Asia/Shanghai">Shanghai (CST)</SelectItem>
-                        <SelectItem value="Australia/Sydney">Sydney (AEDT)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <Button 
-                    onClick={handleSaveSettings}
-                    className="w-full bg-text-primary text-white hover:bg-gray-800"
-                    data-testid="button-save-settings"
-                  >
-                    Save Settings
-                  </Button>
                 </CardContent>
               </Card>
 
@@ -234,8 +139,8 @@ export default function SettingsPage() {
                         </p>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button 
-                              variant="destructive" 
+                            <Button
+                              variant="destructive"
                               size="sm"
                               className="bg-red-600 hover:bg-red-700"
                               data-testid="button-delete-account"
@@ -255,7 +160,7 @@ export default function SettingsPage() {
                               <AlertDialogCancel className="border-gray-300 text-gray-700 hover:bg-gray-50">
                                 Cancel
                               </AlertDialogCancel>
-                              <AlertDialogAction 
+                              <AlertDialogAction
                                 onClick={handleDeleteAccount}
                                 disabled={isDeleting}
                                 className="bg-red-600 hover:bg-red-700 text-white"

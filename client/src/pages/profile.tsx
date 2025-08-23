@@ -40,7 +40,19 @@ export default function Profile() {
   const onSubmit = async (data: ProfileForm) => {
     setLoading(true);
     try {
-      // Update user profile logic would go here
+      if (user) {
+        const { updateProfile } = await import('firebase/auth');
+        await updateProfile(user, {
+          displayName: data.displayName,
+        });
+        
+        // Update the form's default values to reflect the new data
+        form.reset({
+          displayName: data.displayName,
+          email: data.email,
+        });
+      }
+      
       toast({
         title: 'Profile updated',
         description: 'Your profile has been updated successfully.',
@@ -236,60 +248,8 @@ export default function Profile() {
                 </CardContent>
               </Card>
 
-              {/* Account Information */}
+              {/* Danger Zone */}
               <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Settings className="h-5 w-5" />
-                      Account Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3 p-3 bg-secondary-bg rounded-lg">
-                        <Mail className="h-5 w-5 text-accent-blue" />
-                        <div>
-                          <p className="text-sm text-text-secondary">Email</p>
-                          <p className="font-medium">{user?.email}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-3 bg-secondary-bg rounded-lg">
-                        <Calendar className="h-5 w-5 text-accent-green" />
-                        <div>
-                          <p className="text-sm text-text-secondary">Member Since</p>
-                          <p className="font-medium">
-                            {user?.metadata?.creationTime 
-                              ? new Date(user.metadata.creationTime).toLocaleDateString()
-                              : 'N/A'
-                            }
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-3 bg-secondary-bg rounded-lg">
-                        <Clock className="h-5 w-5 text-accent-orange" />
-                        <div>
-                          <p className="text-sm text-text-secondary">Last Sign In</p>
-                          <p className="font-medium">
-                            {user?.metadata?.lastSignInTime 
-                              ? new Date(user.metadata.lastSignInTime).toLocaleDateString()
-                              : 'N/A'
-                            }
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-3 bg-secondary-bg rounded-lg">
-                        <User className="h-5 w-5 text-accent-purple" />
-                        <div>
-                          <p className="text-sm text-text-secondary">User ID</p>
-                          <p className="font-medium text-xs">{user?.uid}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Danger Zone Card */}
                 <Card className="border-red-200">
                   <CardHeader>
                     <CardTitle className="text-red-600">Danger Zone</CardTitle>

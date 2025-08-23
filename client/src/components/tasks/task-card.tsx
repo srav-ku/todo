@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Check, ExternalLink } from "lucide-react";
+import { Check, ExternalLink, Edit, Trash2, MoreHorizontal, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useFirestoreUpdate } from "@/hooks/useFirestore";
+import { useFirestoreUpdate, useFirestoreDelete } from "@/hooks/useFirestore";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface TaskCardProps {
   task: any;
@@ -10,6 +11,7 @@ interface TaskCardProps {
 export default function TaskCard({ task }: TaskCardProps) {
   const { toast } = useToast();
   const updateTask = useFirestoreUpdate('tasks');
+  const deleteTask = useFirestoreDelete('tasks');
 
   const getProjectColor = (color?: string) => {
     switch (color) {
@@ -23,23 +25,56 @@ export default function TaskCard({ task }: TaskCardProps) {
   };
 
   const handleMarkCompleted = async () => {
-    if (task.status !== 'completed') {
-      try {
-        await updateTask(task.id, { 
-          status: 'completed',
-          updatedAt: new Date()
-        });
-        toast({
-          title: "Task updated",
-          description: "Task status has been updated successfully.",
-        });
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to update task status.",
-          variant: "destructive",
-        });
-      }
+    try {
+      await updateTask(task.id, { 
+        status: 'completed',
+        updatedAt: new Date()
+      });
+      toast({
+        title: "Task completed",
+        description: "Task marked as completed successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update task status.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMarkPending = async () => {
+    try {
+      await updateTask(task.id, { 
+        status: 'pending',
+        updatedAt: new Date()
+      });
+      toast({
+        title: "Task updated",
+        description: "Task marked as pending successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update task status.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteTask(task.id);
+      toast({
+        title: "Task deleted",
+        description: "Task deleted successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete task.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -54,26 +89,53 @@ export default function TaskCard({ task }: TaskCardProps) {
         <h3 className="text-lg font-semibold text-text-primary" data-testid={`task-title-${task.id}`}>
           {task.title}
         </h3>
-        <div className={`w-3 h-3 ${getProjectColor(task.project?.color)} rounded-full`}></div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => {}}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={handleDelete}
+              className="text-red-600"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <div className="mb-4">
         <span className="text-sm text-text-muted" data-testid={`task-number-${task.id}`}>
           #{task.id ? task.id.slice(-6) : 'N/A'}
         </span>
-        <Button variant="ghost" size="sm" className="ml-2 h-auto p-0">
-          <ExternalLink className="h-3 w-3 text-text-muted" />
-        </Button>
       </div>
       
       <p className="text-sm text-text-secondary mb-6" data-testid={`task-description-${task.id}`}>
-        {task.description}
+        {task.description || 'No description'}
       </p>
       
       {isCompleted ? (
-        <div className="bg-text-primary text-white px-4 py-2 rounded-md text-center">
-          <Check className="inline mr-2 h-4 w-4" />
-          Completed
+        <div className="space-y-2">
+          <div className="bg-green-100 text-green-800 px-4 py-2 rounded-md text-center">
+            <Check className="inline mr-2 h-4 w-4" />
+            Completed
+          </div>
+          <Button
+            onClick={handleMarkPending}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Mark as Pending
+          </Button>
         </div>
       ) : (
         <Button

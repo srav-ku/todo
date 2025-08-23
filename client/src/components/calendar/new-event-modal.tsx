@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useFirestoreAdd } from "@/hooks/useFirestore";
 import { useAuth } from "@/contexts/AuthContext";
+import { format } from "date-fns";
 
 const newEventSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -53,6 +54,15 @@ export default function NewEventModal({ isOpen, onClose, selectedDate }: NewEven
     },
   });
 
+  // Reset form when modal opens/closes
+  const handleModalChange = (open: boolean) => {
+    if (!open) {
+      setIsSubmitting(false);
+      form.reset();
+      onClose();
+    }
+  };
+
   const onSubmit = async (data: NewEventForm) => {
     if (!user) return;
     
@@ -69,8 +79,10 @@ export default function NewEventModal({ isOpen, onClose, selectedDate }: NewEven
       toast({
         title: "Event created",
         description: "Your new event has been created successfully.",
+        duration: 2000,
       });
       
+      // Reset form and close modal
       form.reset();
       onClose();
     } catch (error) {
@@ -78,6 +90,7 @@ export default function NewEventModal({ isOpen, onClose, selectedDate }: NewEven
         title: "Error creating event",
         description: "An error occurred while creating the event.",
         variant: "destructive",
+        duration: 2000,
       });
     } finally {
       setIsSubmitting(false);
@@ -85,10 +98,13 @@ export default function NewEventModal({ isOpen, onClose, selectedDate }: NewEven
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleModalChange}>
       <DialogContent className="sm:max-w-lg bg-white border border-gray-200" data-testid="modal-new-event">
         <DialogHeader>
           <DialogTitle className="text-text-primary">Add New Event</DialogTitle>
+          <p className="text-sm text-text-muted mt-1">
+            {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+          </p>
         </DialogHeader>
 
         <Form {...form}>
